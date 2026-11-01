@@ -1,0 +1,210 @@
+<mxGraphModel background="#ffffff" dx="2180" dy="1080" grid="1" gridSize="10" guides="1" tooltips="1" connect="1" arrows="1" fold="1" page="1" pageScale="1" pageWidth="2180" pageHeight="1080" math="0" shadow="0">
+  <root>
+    <mxCell id="0"/>
+    <mxCell id="1" parent="0"/>
+
+    <!-- ====================================================================== -->
+    <!-- TITLE -->
+    <!-- ====================================================================== -->
+    <mxCell id="title" value="Train Wagons Planning — Anatomy of the MILP" style="text;html=1;whiteSpace=wrap;align=center;verticalAlign=top;fontSize=22;fontColor=#333333;fontStyle=1;" vertex="1" parent="1">
+      <mxGeometry x="80" y="20" width="1560" height="36" as="geometry"/>
+    </mxCell>
+    <mxCell id="subtitle" value="variables (green), constraints (red; numbers as in docs/mip-model.md), criteria (purple) — edges show which variables a constraint ties together" style="text;html=1;whiteSpace=wrap;align=center;verticalAlign=top;fontSize=13;fontColor=#666666;" vertex="1" parent="1">
+      <mxGeometry x="80" y="58" width="1560" height="24" as="geometry"/>
+    </mxCell>
+
+    <!-- ====================================================================== -->
+    <!-- BANDS -->
+    <!-- ====================================================================== -->
+    <mxCell id="bandRuns" value="RUNS — the loading order" style="rounded=1;whiteSpace=wrap;html=1;arcSize=2;fillColor=#fafafa;strokeColor=#bbbbbb;dashed=1;align=left;verticalAlign=top;spacingLeft=12;spacingTop=6;fontSize=13;fontStyle=1;fontColor=#666666;" vertex="1" parent="1">
+      <mxGeometry x="80" y="100" width="1560" height="160" as="geometry"/>
+    </mxCell>
+    <mxCell id="bandDep" value="DEPARTURES — trains leave one after another" style="rounded=1;whiteSpace=wrap;html=1;arcSize=2;fillColor=#fafafa;strokeColor=#bbbbbb;dashed=1;align=left;verticalAlign=top;spacingLeft=12;spacingTop=6;fontSize=13;fontStyle=1;fontColor=#666666;" vertex="1" parent="1">
+      <mxGeometry x="80" y="320" width="1560" height="160" as="geometry"/>
+    </mxCell>
+    <mxCell id="bandLanes" value="LANES — FIFO buffer and capacity" style="rounded=1;whiteSpace=wrap;html=1;arcSize=2;fillColor=#fafafa;strokeColor=#bbbbbb;dashed=1;align=left;verticalAlign=top;spacingLeft=12;spacingTop=6;fontSize=13;fontStyle=1;fontColor=#666666;" vertex="1" parent="1">
+      <mxGeometry x="80" y="540" width="1560" height="340" as="geometry"/>
+    </mxCell>
+    <mxCell id="bandCrit" value="CRITERIA — minimised lexicographically, order is a parameter" style="rounded=1;whiteSpace=wrap;html=1;arcSize=2;fillColor=#fcf8fd;strokeColor=#bbbbbb;dashed=1;align=left;verticalAlign=top;spacingLeft=12;spacingTop=6;fontSize=13;fontStyle=1;fontColor=#666666;" vertex="1" parent="1">
+      <mxGeometry x="80" y="910" width="1560" height="140" as="geometry"/>
+    </mxCell>
+
+    <!-- ====================================================================== -->
+    <!-- RUN VARIABLES -->
+    <!-- ====================================================================== -->
+    <mxCell id="u" value="&lt;b&gt;u(r)&lt;/b&gt; ∈ {0, 1}&lt;br&gt;run slot r is used" style="rounded=1;whiteSpace=wrap;html=1;arcSize=8;fillColor=#d5e8d4;strokeColor=#82b366;fontSize=12;align=center;verticalAlign=middle;" vertex="1" parent="1">
+      <mxGeometry x="100" y="150" width="260" height="70" as="geometry"/>
+    </mxCell>
+    <mxCell id="y" value="&lt;b&gt;y(r, g)&lt;/b&gt; ∈ {0, 1}&lt;br&gt;run r loads goods type g" style="rounded=1;whiteSpace=wrap;html=1;arcSize=8;fillColor=#d5e8d4;strokeColor=#82b366;fontSize=12;align=center;verticalAlign=middle;" vertex="1" parent="1">
+      <mxGeometry x="420" y="150" width="260" height="70" as="geometry"/>
+    </mxCell>
+    <mxCell id="x" value="&lt;b&gt;x(i, r)&lt;/b&gt; ∈ {0, 1}&lt;br&gt;wagon i is loaded in run r" style="rounded=1;whiteSpace=wrap;html=1;arcSize=8;fillColor=#d5e8d4;strokeColor=#82b366;fontSize=12;align=center;verticalAlign=middle;" vertex="1" parent="1">
+      <mxGeometry x="740" y="150" width="260" height="70" as="geometry"/>
+    </mxCell>
+    <mxCell id="r" value="&lt;b&gt;r(i) = Σ_r r · x(i, r)&lt;/b&gt;&lt;br&gt;run number of wagon i" style="rounded=1;whiteSpace=wrap;html=1;arcSize=8;fillColor=#d5e8d4;strokeColor=#82b366;fontSize=12;align=center;verticalAlign=middle;dashed=1;" vertex="1" parent="1">
+      <mxGeometry x="1060" y="150" width="260" height="70" as="geometry"/>
+    </mxCell>
+    <mxCell id="F" value="&lt;b&gt;F(p)&lt;/b&gt; ∈ [1, R] — optional&lt;br&gt;first run of T_p,&lt;br&gt;only with the spread S" style="rounded=1;whiteSpace=wrap;html=1;arcSize=8;fillColor=#d5e8d4;strokeColor=#82b366;fontSize=12;align=center;verticalAlign=middle;" vertex="1" parent="1">
+      <mxGeometry x="1380" y="150" width="260" height="70" as="geometry"/>
+    </mxCell>
+
+    <!-- ====================================================================== -->
+    <!-- DEPARTURE VARIABLES -->
+    <!-- ====================================================================== -->
+    <mxCell id="a" value="&lt;b&gt;a(i, p)&lt;/b&gt; ∈ {0, 1}, p &amp;lt; k(i)&lt;br&gt;wagon i is in the buffer&lt;br&gt;before T_p leaves (pre-loaded)" style="rounded=1;whiteSpace=wrap;html=1;arcSize=8;fillColor=#d5e8d4;strokeColor=#82b366;fontSize=12;align=center;verticalAlign=middle;" vertex="1" parent="1">
+      <mxGeometry x="740" y="370" width="260" height="80" as="geometry"/>
+    </mxCell>
+    <mxCell id="D" value="&lt;b&gt;D(p)&lt;/b&gt; ∈ [1, R]&lt;br&gt;run during which T_p leaves" style="rounded=1;whiteSpace=wrap;html=1;arcSize=8;fillColor=#d5e8d4;strokeColor=#82b366;fontSize=12;align=center;verticalAlign=middle;" vertex="1" parent="1">
+      <mxGeometry x="1060" y="370" width="260" height="70" as="geometry"/>
+    </mxCell>
+
+    <!-- ====================================================================== -->
+    <!-- LANE VARIABLES AND CAPACITY -->
+    <!-- ====================================================================== -->
+    <mxCell id="agg" value="&lt;b&gt;(15)&lt;/b&gt; aggregated capacity&lt;br&gt;Σ over lanes of (12):&lt;br&gt;own + pre-loaded ≤ M · Σ v" style="rounded=1;whiteSpace=wrap;html=1;arcSize=8;fillColor=#f8cecc;strokeColor=#b85450;fontSize=12;align=center;verticalAlign=middle;" vertex="1" parent="1">
+      <mxGeometry x="100" y="590" width="260" height="80" as="geometry"/>
+    </mxCell>
+    <mxCell id="cap" value="&lt;b&gt;(12)&lt;/b&gt; lane capacity&lt;br&gt;right before T_p leaves:&lt;br&gt;Σ w · z + Σ w · h ≤ M · v(ℓ)" style="rounded=1;whiteSpace=wrap;html=1;arcSize=8;fillColor=#f8cecc;strokeColor=#b85450;fontSize=12;align=center;verticalAlign=middle;" vertex="1" parent="1">
+      <mxGeometry x="420" y="590" width="260" height="80" as="geometry"/>
+    </mxCell>
+    <mxCell id="h" value="&lt;b&gt;h(i, p, ℓ)&lt;/b&gt; ∈ [0, 1]&lt;br&gt;= a(i, p) · z(i, ℓ)&lt;br&gt;largest block of the model" style="rounded=1;whiteSpace=wrap;html=1;arcSize=8;fillColor=#d5e8d4;strokeColor=#82b366;fontSize=12;align=center;verticalAlign=middle;" vertex="1" parent="1">
+      <mxGeometry x="740" y="590" width="260" height="80" as="geometry"/>
+    </mxCell>
+    <mxCell id="z" value="&lt;b&gt;z(i, ℓ)&lt;/b&gt; ∈ {0, 1}&lt;br&gt;wagon i goes to lane ℓ" style="rounded=1;whiteSpace=wrap;html=1;arcSize=8;fillColor=#d5e8d4;strokeColor=#82b366;fontSize=12;align=center;verticalAlign=middle;" vertex="1" parent="1">
+      <mxGeometry x="1060" y="590" width="260" height="70" as="geometry"/>
+    </mxCell>
+    <mxCell id="rho" value="&lt;b&gt;ρ(ℓ, i)&lt;/b&gt; ∈ [0, R]&lt;br&gt;highest run among the&lt;br&gt;wagons 1 … i in lane ℓ" style="rounded=1;whiteSpace=wrap;html=1;arcSize=8;fillColor=#d5e8d4;strokeColor=#82b366;fontSize=12;align=center;verticalAlign=middle;" vertex="1" parent="1">
+      <mxGeometry x="1380" y="590" width="260" height="80" as="geometry"/>
+    </mxCell>
+    <mxCell id="v" value="&lt;b&gt;v(ℓ)&lt;/b&gt; ∈ {0, 1}&lt;br&gt;lane ℓ is used" style="rounded=1;whiteSpace=wrap;html=1;arcSize=8;fillColor=#d5e8d4;strokeColor=#82b366;fontSize=12;align=center;verticalAlign=middle;" vertex="1" parent="1">
+      <mxGeometry x="1060" y="740" width="260" height="70" as="geometry"/>
+    </mxCell>
+    <mxCell id="n" value="&lt;b&gt;n(ℓ) = Σ_i z(i, ℓ)&lt;/b&gt;&lt;br&gt;wagons in lane ℓ" style="rounded=1;whiteSpace=wrap;html=1;arcSize=8;fillColor=#d5e8d4;strokeColor=#82b366;fontSize=12;align=center;verticalAlign=middle;dashed=1;" vertex="1" parent="1">
+      <mxGeometry x="1380" y="720" width="260" height="60" as="geometry"/>
+    </mxCell>
+    <mxCell id="sym" value="&lt;b&gt;(14)&lt;/b&gt; n(ℓ+1) ≤ n(ℓ)&lt;br&gt;busiest lane first (priority)" style="rounded=1;whiteSpace=wrap;html=1;arcSize=8;fillColor=#f8cecc;strokeColor=#b85450;fontSize=12;align=center;verticalAlign=middle;" vertex="1" parent="1">
+      <mxGeometry x="1380" y="805" width="260" height="60" as="geometry"/>
+    </mxCell>
+
+    <!-- ====================================================================== -->
+    <!-- EDGES (constraint numbers) -->
+    <!-- ====================================================================== -->
+    <mxCell id="e1" value="(2)" style="edgeStyle=orthogonalEdgeStyle;rounded=1;html=1;endArrow=block;endFill=1;strokeColor=#555555;fontSize=11;labelBackgroundColor=#ffffff;" edge="1" parent="1" source="x" target="y">
+      <mxGeometry relative="1" as="geometry"/>
+    </mxCell>
+    <mxCell id="e2" value="(3) (4)" style="edgeStyle=orthogonalEdgeStyle;rounded=1;html=1;endArrow=block;endFill=1;strokeColor=#555555;fontSize=11;labelBackgroundColor=#ffffff;" edge="1" parent="1" source="y" target="u">
+      <mxGeometry relative="1" as="geometry"/>
+    </mxCell>
+    <mxCell id="e3" value="definition" style="edgeStyle=orthogonalEdgeStyle;rounded=1;html=1;endArrow=block;endFill=1;strokeColor=#555555;fontSize=11;labelBackgroundColor=#ffffff;" edge="1" parent="1" source="x" target="r">
+      <mxGeometry relative="1" as="geometry"/>
+    </mxCell>
+    <mxCell id="e4" value="(8) (9)" style="edgeStyle=orthogonalEdgeStyle;rounded=1;html=1;endArrow=block;endFill=1;strokeColor=#555555;fontSize=11;labelBackgroundColor=#ffffff;" edge="1" parent="1" source="r" target="D">
+      <mxGeometry relative="1" as="geometry"/>
+    </mxCell>
+    <mxCell id="e5" value="(10)" style="edgeStyle=orthogonalEdgeStyle;rounded=1;html=1;endArrow=block;endFill=1;strokeColor=#555555;fontSize=11;labelBackgroundColor=#ffffff;exitX=0.2;exitY=1;entryX=0.5;entryY=0;" edge="1" parent="1" source="r" target="a">
+      <mxGeometry relative="1" as="geometry">
+        <Array as="points">
+          <mxPoint x="1112" y="290"/>
+          <mxPoint x="870" y="290"/>
+        </Array>
+      </mxGeometry>
+    </mxCell>
+    <mxCell id="e6" value="(10)" style="edgeStyle=orthogonalEdgeStyle;rounded=1;html=1;endArrow=block;endFill=1;strokeColor=#555555;fontSize=11;labelBackgroundColor=#ffffff;" edge="1" parent="1" source="D" target="a">
+      <mxGeometry relative="1" as="geometry"/>
+    </mxCell>
+    <mxCell id="e7" value="(11)" style="edgeStyle=orthogonalEdgeStyle;rounded=1;html=1;endArrow=block;endFill=1;strokeColor=#555555;fontSize=11;labelBackgroundColor=#ffffff;" edge="1" parent="1" source="a" target="h">
+      <mxGeometry relative="1" as="geometry"/>
+    </mxCell>
+    <mxCell id="e8" value="(11)" style="edgeStyle=orthogonalEdgeStyle;rounded=1;html=1;endArrow=block;endFill=1;strokeColor=#555555;fontSize=11;labelBackgroundColor=#ffffff;" edge="1" parent="1" source="z" target="h">
+      <mxGeometry relative="1" as="geometry"/>
+    </mxCell>
+    <mxCell id="e9" value="(12)" style="edgeStyle=orthogonalEdgeStyle;rounded=1;html=1;endArrow=block;endFill=1;strokeColor=#555555;fontSize=11;labelBackgroundColor=#ffffff;" edge="1" parent="1" source="h" target="cap">
+      <mxGeometry relative="1" as="geometry"/>
+    </mxCell>
+    <mxCell id="e10" value="(12) own wagons of T_p" style="edgeStyle=orthogonalEdgeStyle;rounded=1;html=1;endArrow=block;endFill=1;strokeColor=#555555;fontSize=11;labelBackgroundColor=#ffffff;exitX=0.2;exitY=1;entryX=0.75;entryY=1;" edge="1" parent="1" source="z" target="cap">
+      <mxGeometry relative="1" as="geometry">
+        <Array as="points">
+          <mxPoint x="1112" y="700"/>
+          <mxPoint x="615" y="700"/>
+        </Array>
+      </mxGeometry>
+    </mxCell>
+    <mxCell id="e11" value="(12) M · v(ℓ)" style="edgeStyle=orthogonalEdgeStyle;rounded=1;html=1;endArrow=block;endFill=1;strokeColor=#555555;fontSize=11;labelBackgroundColor=#ffffff;exitX=0;exitY=0.5;entryX=0.25;entryY=1;" edge="1" parent="1" source="v" target="cap">
+      <mxGeometry relative="1" as="geometry">
+        <Array as="points">
+          <mxPoint x="485" y="775"/>
+        </Array>
+      </mxGeometry>
+    </mxCell>
+    <mxCell id="e12" value="sum over lanes" style="edgeStyle=orthogonalEdgeStyle;rounded=1;html=1;endArrow=block;endFill=1;strokeColor=#555555;fontSize=11;labelBackgroundColor=#ffffff;" edge="1" parent="1" source="cap" target="agg">
+      <mxGeometry relative="1" as="geometry"/>
+    </mxCell>
+    <mxCell id="e13" value="(5)–(7)" style="edgeStyle=orthogonalEdgeStyle;rounded=1;html=1;endArrow=block;endFill=1;strokeColor=#555555;fontSize=11;labelBackgroundColor=#ffffff;" edge="1" parent="1" source="z" target="rho">
+      <mxGeometry relative="1" as="geometry"/>
+    </mxCell>
+    <mxCell id="e14" value="(5)–(7) FIFO" style="edgeStyle=orthogonalEdgeStyle;rounded=1;html=1;endArrow=block;endFill=1;strokeColor=#555555;fontSize=11;labelBackgroundColor=#ffffff;exitX=0.9;exitY=1;entryX=0.5;entryY=0;" edge="1" parent="1" source="r" target="rho">
+      <mxGeometry relative="1" as="geometry">
+        <Array as="points">
+          <mxPoint x="1294" y="300"/>
+          <mxPoint x="1510" y="300"/>
+        </Array>
+      </mxGeometry>
+    </mxCell>
+    <mxCell id="e15" value="(16)" style="edgeStyle=orthogonalEdgeStyle;rounded=1;html=1;endArrow=block;endFill=1;strokeColor=#555555;fontSize=11;labelBackgroundColor=#ffffff;" edge="1" parent="1" source="r" target="F">
+      <mxGeometry relative="1" as="geometry"/>
+    </mxCell>
+    <mxCell id="e16" value="(13)" style="edgeStyle=orthogonalEdgeStyle;rounded=1;html=1;endArrow=block;endFill=1;strokeColor=#555555;fontSize=11;labelBackgroundColor=#ffffff;" edge="1" parent="1" source="z" target="v">
+      <mxGeometry relative="1" as="geometry"/>
+    </mxCell>
+    <mxCell id="e17" value="(13)" style="edgeStyle=orthogonalEdgeStyle;rounded=1;html=1;endArrow=block;endFill=1;strokeColor=#555555;fontSize=11;labelBackgroundColor=#ffffff;exitX=1;exitY=0.85;entryX=0;entryY=0.5;" edge="1" parent="1" source="z" target="n">
+      <mxGeometry relative="1" as="geometry">
+        <Array as="points">
+          <mxPoint x="1350" y="650"/>
+          <mxPoint x="1350" y="750"/>
+        </Array>
+      </mxGeometry>
+    </mxCell>
+    <mxCell id="e18" value="" style="edgeStyle=orthogonalEdgeStyle;rounded=1;html=1;endArrow=block;endFill=1;strokeColor=#555555;fontSize=11;labelBackgroundColor=#ffffff;" edge="1" parent="1" source="n" target="sym">
+      <mxGeometry relative="1" as="geometry"/>
+    </mxCell>
+
+    <!-- ====================================================================== -->
+    <!-- CRITERIA -->
+    <!-- ====================================================================== -->
+    <mxCell id="c1" value="&lt;b&gt;changes&lt;/b&gt;&lt;br&gt;C = Σ_r u(r) − 1" style="rounded=1;whiteSpace=wrap;html=1;arcSize=8;fillColor=#e1d5e7;strokeColor=#9673a6;fontSize=12;align=center;verticalAlign=middle;" vertex="1" parent="1">
+      <mxGeometry x="100" y="960" width="260" height="70" as="geometry"/>
+    </mxCell>
+    <mxCell id="c2" value="&lt;b&gt;lanes&lt;/b&gt;&lt;br&gt;L = Σ_ℓ v(ℓ)" style="rounded=1;whiteSpace=wrap;html=1;arcSize=8;fillColor=#e1d5e7;strokeColor=#9673a6;fontSize=12;align=center;verticalAlign=middle;" vertex="1" parent="1">
+      <mxGeometry x="420" y="960" width="260" height="70" as="geometry"/>
+    </mxCell>
+    <mxCell id="c3" value="&lt;b&gt;waiting&lt;/b&gt;&lt;br&gt;Σ_p n_p · Σ_i a(i, p) + const" style="rounded=1;whiteSpace=wrap;html=1;arcSize=8;fillColor=#e1d5e7;strokeColor=#9673a6;fontSize=12;align=center;verticalAlign=middle;" vertex="1" parent="1">
+      <mxGeometry x="740" y="960" width="260" height="70" as="geometry"/>
+    </mxCell>
+    <mxCell id="c4" value="&lt;b&gt;peak&lt;/b&gt;&lt;br&gt;P ≥ n_p + Σ_i a(i, p)" style="rounded=1;whiteSpace=wrap;html=1;arcSize=8;fillColor=#e1d5e7;strokeColor=#9673a6;fontSize=12;align=center;verticalAlign=middle;" vertex="1" parent="1">
+      <mxGeometry x="1060" y="960" width="260" height="70" as="geometry"/>
+    </mxCell>
+    <mxCell id="c5" value="&lt;b&gt;priority&lt;/b&gt;&lt;br&gt;Q = Σ c(ℓ) · z(i, ℓ)" style="rounded=1;whiteSpace=wrap;html=1;arcSize=8;fillColor=#e1d5e7;strokeColor=#9673a6;fontSize=12;align=center;verticalAlign=middle;" vertex="1" parent="1">
+      <mxGeometry x="1380" y="960" width="260" height="70" as="geometry"/>
+    </mxCell>
+
+    <!-- ====================================================================== -->
+    <!-- CONSTRAINT LIST -->
+    <!-- ====================================================================== -->
+    <mxCell id="list" value="&lt;b&gt;Constraints&lt;/b&gt;&lt;br&gt;&lt;br&gt;(1) every wagon: one run, one lane&lt;br&gt;(2) a wagon&#x27;s run carries its goods type&lt;br&gt;(3) one goods type per used run; used runs first, none empty&lt;br&gt;(4) consecutive runs have different goods&lt;br&gt;(5)–(7) FIFO: along the keys, the runs of the wagons&lt;br&gt;in a lane do not decrease (ρ = highest run so far)&lt;br&gt;(8) T_p leaves in the run of its last wagon&lt;br&gt;(9) … and not before T_(p−1)&lt;br&gt;(10) a wagon of a later train in a run before D(p)&lt;br&gt;is in the buffer when T_p leaves&lt;br&gt;(11) h = a · z, exact (Σ_ℓ h = a, h ≤ z)&lt;br&gt;(12) lane capacity right before every departure&lt;br&gt;(13) lane used ⇔ it holds wagons&lt;br&gt;(14) lanes ordered by their number of wagons&lt;br&gt;(15) sum of (12) over all lanes — implied, stronger LP&lt;br&gt;(16) optional spread S: F(k) ≤ r(i) ≤ F(k) + S,&lt;br&gt;a train within S + 1 consecutive runs" style="rounded=1;whiteSpace=wrap;html=1;arcSize=8;fillColor=#f8cecc;strokeColor=#b85450;fontSize=12;align=center;verticalAlign=middle;align=left;verticalAlign=top;spacingLeft=12;spacingTop=10;" vertex="1" parent="1">
+      <mxGeometry x="1680" y="100" width="460" height="485" as="geometry"/>
+    </mxCell>
+
+    <!-- ====================================================================== -->
+    <!-- THREE FACTS AND SIZE -->
+    <!-- ====================================================================== -->
+    <mxCell id="facts" value="&lt;b&gt;Three facts&lt;/b&gt; (proved in mip-model.md)&lt;br&gt;&lt;br&gt;&lt;b&gt;1&lt;/b&gt; Inside a run the wagons are loaded in extraction order (by key).&lt;br&gt;&lt;br&gt;&lt;b&gt;2&lt;/b&gt; A FIFO lane never blocks ⇔ its run numbers do not decrease along the keys.&lt;br&gt;&lt;br&gt;&lt;b&gt;3&lt;/b&gt; Lane weight only grows between departures: check capacity right before each one.&lt;br&gt;&lt;br&gt;So the model only chooses a run and a lane for every wagon." style="rounded=1;whiteSpace=wrap;html=1;arcSize=8;fillColor=#f5f5f5;strokeColor=#666666;fontSize=12;align=center;verticalAlign=middle;align=left;verticalAlign=top;spacingLeft=12;spacingTop=10;" vertex="1" parent="1">
+      <mxGeometry x="1680" y="600" width="460" height="270" as="geometry"/>
+    </mxCell>
+    <mxCell id="size" value="&lt;b&gt;Size&lt;/b&gt; for 300 wagons, 26 lanes, 20 runs:&lt;br&gt;x 6 000 · z 7 800 · a ≈ 4 350 binaries&lt;br&gt;h ≈ 113 000 continuous — h dominates" style="rounded=1;whiteSpace=wrap;html=1;arcSize=8;fillColor=#f5f5f5;strokeColor=#666666;fontSize=12;align=center;verticalAlign=middle;align=left;verticalAlign=top;spacingLeft=12;spacingTop=10;" vertex="1" parent="1">
+      <mxGeometry x="1680" y="910" width="460" height="140" as="geometry"/>
+    </mxCell>
+    <mxCell id="copy" value="© 2026 Taras Bulubas. All rights reserved." style="text;html=1;whiteSpace=wrap;align=left;verticalAlign=top;fontSize=10;fontColor=#999999;" vertex="1" parent="1">
+      <mxGeometry x="80" y="1055" width="600" height="20" as="geometry"/>
+    </mxCell>
+  </root>
+</mxGraphModel>
