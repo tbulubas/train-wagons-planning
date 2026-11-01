@@ -1,5 +1,7 @@
 # Train Wagons Planning
 
+[![Open In Colab](https://colab.research.google.com/assets/colab-badge.svg)](https://colab.research.google.com/github/tbulubas/train-wagons-planning/blob/main/notebooks/benchmark.ipynb)
+
 Wagons are loaded one by one in a port and moved into a buffer of N FIFO
 lanes with a load capacity M each; from there the trains of a given dispatch
 plan are assembled, one after another. The task is to find the loading order
@@ -33,7 +35,8 @@ the code and the documentation, following my specifications and decisions.
 
 **License.** © 2026 Taras Bulubas. All rights reserved. This repository is
 published for viewing only; any use requires my prior written permission —
-see [License](#license).
+see [License](#license). The one exception is the notebook, which you may run
+and modify in Google Colab for personal, non-commercial exploration.
 
 ## Development environment
 
@@ -195,6 +198,16 @@ together:
 3. **Watching a plan** — snapshots of the yard for the three-train example of
    `docs/mip-model.md`, and the interactive viewer of a larger plan.
 
+**Online, nothing to install:** [![Open In Colab](https://colab.research.google.com/assets/colab-badge.svg)](https://colab.research.google.com/github/tbulubas/train-wagons-planning/blob/main/notebooks/benchmark.ipynb)
+
+The link opens the notebook in Google Colab (a Google account is needed).
+Its first code cell fetches this repository — the benchmark results and the
+tests — and installs the `train_wagons` package; then *Runtime → Run all*
+runs everything. Changes stay in your own copy — use *File → Save a copy in
+Drive* to keep them.
+
+**Locally:**
+
 ```bash
 make notebook
 ```
@@ -279,9 +292,14 @@ LICENSE               all rights reserved
 
 © 2026 Taras Bulubas. **All rights reserved.**
 
-This repository — code, models, documentation and images — is published for
-viewing only. Using, running, copying, modifying or distributing any part of
-it requires my prior written permission.
+This repository — code, models, documentation, notebooks and images — is
+published for viewing only. Using, running, copying, modifying or
+distributing any part of it requires my prior written permission.
+
+**Exception:** you may open, run and modify the notebook
+`notebooks/benchmark.ipynb` in Google Colab for personal, non-commercial
+exploration. Your modified copy is for yourself only; it may not be published
+or redistributed, and the code and models may not be reused elsewhere.
 
 See [LICENSE](LICENSE) for the full terms. To ask for permission, write to
 taras.bulubas@gmail.com.

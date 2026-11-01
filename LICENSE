@@ -21,6 +21,14 @@ prior written permission of the copyright holder you may not:
 Viewing the Work on GitHub, and forking it on GitHub to the extent required
 by the GitHub Terms of Service, does not grant any of the rights above.
 
+Exception - online notebook: you may open, run and modify the notebook
+notebooks/benchmark.ipynb in Google Colab, including the automatic download
+of this repository and installation of the train_wagons package it performs
+there, for personal, non-commercial exploration. Your modified copy may only
+be kept for yourself. No other rights are granted; in particular you may not
+reuse the code, the models or the notebook elsewhere, or publish or
+redistribute them or any modified version.
+
 To request permission, contact the copyright holder at
 taras.bulubas@gmail.com. Permission is only valid if given in writing.
 
