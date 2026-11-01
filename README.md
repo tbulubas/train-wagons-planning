@@ -47,6 +47,7 @@ All dependencies are declared in [pyproject.toml](pyproject.toml):
 | runtime     | `ortools` | the MILP, SCIP, CP-SAT  |
 | extra `dev` | `pytest`  | tests                   |
 | extra `plot` | `matplotlib` | the image          |
+| extra `notebook` | `jupyterlab`, `pandas`, `pandas-stubs` (+ `plot`) | the benchmark notebook |
 
 ### Getting make on Windows
 
@@ -66,7 +67,7 @@ make venv
 ```
 
 creates `.venv` with **Python 3.12** and installs the project in editable
-mode with the `dev` and `plot` extras. Running it again only reinstalls when
+mode with the `dev`, `plot` and `notebook` extras. Running it again only reinstalls when
 `pyproject.toml` or the `Makefile` has changed.
 
 The version is pinned in the Makefile (`PYTHON_VERSION := 3.12`). On Windows
@@ -84,6 +85,8 @@ If `.venv` exists with another Python version, `make venv` stops and asks for
 | `make run`           | solve an example instance; options with `ARGS="..."`   |
 | `make view`          | solve the example and open the plan viewer `out/plan.html` |
 | `make image`         | render `images/train-wagons-linkedin.png`              |
+| `make notebook`      | open `notebooks/benchmark.ipynb` in JupyterLab         |
+| `make notebook-check` | run all notebook cells headless and store the outputs |
 | `make benchmark`     | solve the benchmark grid (hours) and write `docs/benchmark.md` |
 | `make report`        | write `docs/benchmark.md` from `docs/benchmark/*.csv`  |
 | `make diagrams`      | export `docs/diagrams/*.drawio` to SVG (draw.io desktop app) |
@@ -99,7 +102,7 @@ Linux/macOS.
 
 ```bash
 py -3.12 -m venv .venv
-.venv/Scripts/python -m pip install -e ".[dev,plot]"
+.venv/Scripts/python -m pip install -e ".[dev,plot,notebook]"
 ```
 
 (On Linux/macOS use `python3.12 -m venv .venv` and `.venv/bin/python`.)
@@ -176,6 +179,30 @@ print(result.metrics, result.departures)
 possible and reports violated rules, independently of any model; `verify`
 returns only the violations.
 
+## Notebook
+
+[notebooks/benchmark.ipynb](notebooks/benchmark.ipynb) brings the results
+together:
+
+1. **The benchmark** — reads `docs/benchmark/*.csv` and shows, per solver
+   configuration, where the optimum is proved (a map of trains × load factor),
+   why SCIP stalls (its lower bound stays at the trivial LP bound while CP-SAT
+   raises it), time against model size, and how much the MILP improves on the
+   heuristic plan — each with a short interpretation.
+2. **Are the plans right?** — what `simulate`, the exhaustive search and the
+   tests check, and a live comparison of the MILP (both solvers) with the
+   exhaustive search on twelve tiny instances.
+3. **Watching a plan** — snapshots of the yard for the three-train example of
+   `docs/mip-model.md`, and the interactive viewer of a larger plan.
+
+```bash
+make notebook
+```
+
+opens it in JupyterLab. The notebook is stored with its outputs, so it can be
+read without running it; `make notebook-check` runs all cells headless (under
+a minute) and stores the outputs again.
+
 ## Image
 
 ![A snapshot of an optimal plan](images/train-wagons-linkedin.png)
@@ -236,6 +263,7 @@ src/train_wagons/
   baseline.py         reference plan, train by train
   viewer.py           interactive HTML viewer of a plan
   draw.py             yard snapshots of a plan and the image
+notebooks/            benchmark.ipynb: benchmark, checks and plans
   heuristic.py        heuristic plan in waves (upper bound, R, start)
   model.py            the MILP, solved lexicographically with SCIP or CP-SAT
   cli.py              command line interface

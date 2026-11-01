@@ -83,44 +83,32 @@ def goods_colors(instance: YardInstance) -> dict[str, str]:
     return {g: PALETTE[n % len(PALETTE)] for n, g in enumerate(instance.goods_types)}
 
 
-def draw_linkedin(
-    instance: YardInstance,
-    plan: LoadingPlan,
-    state: YardState,
-    path: str,
-    headline: str,
-    subline: str,
-    facts: list[str],
-    footer: str,
-) -> None:
-    """A 2400 × 1350 px image: port, buffer lanes and departure track in one snapshot."""
-    import matplotlib
+def _box(ax, x, y, w, h, face, edge="#555555", lw=1.0, radius=0.8, z=2):
+    from matplotlib.patches import FancyBboxPatch
 
-    matplotlib.use("Agg")
-    import matplotlib.pyplot as plt
-    from matplotlib.patches import FancyArrowPatch, FancyBboxPatch
+    ax.add_patch(FancyBboxPatch((x, y), w, h, boxstyle=f"round,pad=0,rounding_size={radius}",
+                                facecolor=face, edgecolor=edge, linewidth=lw, zorder=z))
+
+
+def draw_yard(ax, instance: YardInstance, plan: LoadingPlan, state: YardState, frame: bool = True) -> None:
+    """Draw one state of the yard: next wagons in the port, the lanes, the departure track.
+
+    The drawing uses the coordinates x 0 … 240 and at most y 18 … 112; a
+    lane is at most 9.5 high, so a buffer of few lanes takes less height.
+    With `frame` the axes are set to the area used and hidden.
+    """
+    from matplotlib.patches import FancyArrowPatch
 
     colors = goods_colors(instance)
     weight = {w.key: w.weight for w in instance.wagons}
     goods = {w.key: w.goods for w in instance.wagons}
-    fig = plt.figure(figsize=(12, 6.75), dpi=200)
-    ax = fig.add_axes((0, 0, 1, 1))
-    ax.set_xlim(0, 240)
-    ax.set_ylim(0, 135)
-    ax.axis("off")
-    fig.patch.set_facecolor("white")
 
     def box(x, y, w, h, face, edge="#555555", lw=1.0, radius=0.8, z=2):
-        ax.add_patch(FancyBboxPatch((x, y), w, h, boxstyle=f"round,pad=0,rounding_size={radius}",
-                                    facecolor=face, edgecolor=edge, linewidth=lw, zorder=z))
+        _box(ax, x, y, w, h, face, edge, lw, radius, z)
 
     def wagon(key, x, y, w, h, highlight=False, size=8.5):
         box(x, y, w, h, colors[goods[key]], "#c1121f" if highlight else "#444444", 2.4 if highlight else 0.8)
         ax.text(x + w / 2, y + h / 2, f"{key[0]}.{key[1]}", ha="center", va="center", fontsize=size, zorder=3)
-
-    # headline
-    ax.text(120, 127, headline, ha="center", va="center", fontsize=25, fontweight="bold", color="#1d3557")
-    ax.text(120, 119, subline, ha="center", va="center", fontsize=12.5, color="#555555")
 
     # port: the wagon just loaded and the next ones
     ax.text(6, 109, "PORT · loading track", fontsize=11, fontweight="bold", color="#333333")
@@ -138,8 +126,9 @@ def draw_linkedin(
 
     # buffer: front of every lane on the right, next to the departure track
     n = instance.lanes
-    top, bottom = 102.0, 26.0
-    row = (top - bottom) / n
+    top = 102.0
+    row = min((top - 26.0) / n, 9.5)
+    bottom = top - n * row
     lane_x, lane_w = 62.0, 120.0
     ax.text(lane_x, 109, f"BUFFER · {n} FIFO lanes of {instance.capacity:g} t — wagons enter left, leave right",
             fontsize=11, fontweight="bold", color="#333333")
@@ -165,6 +154,7 @@ def draw_linkedin(
 
     # departure track: the train under assembly, position 1 right behind the locomotive
     k = state.train
+    track_bottom = 100.0
     ax.text(192, 109, "DEPARTURE TRACK", fontsize=11, fontweight="bold", color="#333333")
     if k is not None:
         total = len(instance.trains[k - 1])
@@ -173,21 +163,56 @@ def draw_linkedin(
         ax.text(208, 100 - h / 2 - 0.4, f"T_{k}  locomotive", ha="center", va="center", fontsize=8.5, color="white")
         for q, key in enumerate(state.track, start=1):
             wagon(key, 192, 100 - (q + 1) * h, 32, h - 0.8, highlight=key == state.wagon)
+        track_bottom = 100 - (len(state.track) + 1) * h - 15
         ax.text(192, 100 - (len(state.track) + 1) * h - 3.5, f"{len(state.track)} of {total} wagons, taken from"
                 "\nthe fronts of the lanes", fontsize=8.5, color="#555555", va="top")
-    ax.text(192, 26, "left: " + (" ".join(f"T_{t}" for t in state.departed) or "—"), fontsize=9, color="#555555")
+    left_y = min(bottom, track_bottom)  # below the train under assembly when the buffer is low
+    ax.text(192, left_y, "left: " + (" ".join(f"T_{t}" for t in state.departed) or "—"), fontsize=9, color="#555555")
 
     # legend of the goods types
     x = 62.0
     for g, c in colors.items():
-        box(x, 20.2, 3.2, 2.6, c, "#555555", 0.6, radius=0.3)
-        ax.text(x + 4.2, 21.5, g, va="center", fontsize=9)
+        box(x, bottom - 5.8, 3.2, 2.6, c, "#555555", 0.6, radius=0.3)
+        ax.text(x + 4.2, bottom - 4.5, g, va="center", fontsize=9)
         x += 6 + 1.6 * len(g)
+    if frame:
+        lowest = min(y, bottom - 8.0, left_y - 3.0)
+        ax.set_xlim(0, 240)
+        ax.set_ylim(lowest, 112)
+        ax.set_aspect("equal")
+        ax.axis("off")
 
-    # facts and footer
+
+def draw_linkedin(
+    instance: YardInstance,
+    plan: LoadingPlan,
+    state: YardState,
+    path: str,
+    headline: str,
+    subline: str,
+    facts: list[str],
+    footer: str,
+) -> None:
+    """A 2400 × 1350 px image: port, buffer lanes and departure track in one snapshot."""
+    import matplotlib
+
+    matplotlib.use("Agg")
+    import matplotlib.pyplot as plt
+
+    fig = plt.figure(figsize=(12, 6.75), dpi=200)
+    ax = fig.add_axes((0, 0, 1, 1))
+    ax.set_xlim(0, 240)
+    ax.set_ylim(0, 135)
+    ax.axis("off")
+    fig.patch.set_facecolor("white")
+
+    ax.text(120, 127, headline, ha="center", va="center", fontsize=25, fontweight="bold", color="#1d3557")
+    ax.text(120, 119, subline, ha="center", va="center", fontsize=12.5, color="#555555")
+    draw_yard(ax, instance, plan, state, frame=False)
+
     fx, fw = 6.0, 74.0
     for fact in facts:
-        box(fx, 4.5, fw - 2, 11.5, "#f8f9fa", "#adb5bd", 0.8, radius=1.0)
+        _box(ax, fx, 4.5, fw - 2, 11.5, "#f8f9fa", "#adb5bd", 0.8, radius=1.0)
         ax.text(fx + (fw - 2) / 2, 10.25, fact, ha="center", va="center", fontsize=10, color="#222222", wrap=True)
         fx += fw + 3
     ax.text(234, 0.8, footer, ha="right", va="bottom", fontsize=9, color="#888888")

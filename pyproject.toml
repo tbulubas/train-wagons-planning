@@ -17,6 +17,7 @@ dependencies = ["ortools>=9.10"]
 [project.optional-dependencies]
 dev = ["pytest>=8"]
 plot = ["matplotlib>=3.8"]
+notebook = ["train-wagons[plot]", "jupyterlab>=4", "pandas>=2", "pandas-stubs>=2"]
 
 [project.scripts]
 train-wagons = "train_wagons.cli:main"

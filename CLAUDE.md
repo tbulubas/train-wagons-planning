@@ -28,8 +28,9 @@ plan), `heuristic.py` (wave plan), `model.py` (the MILP of
 `docs/mip-model.md`, SCIP or CP-SAT, lexicographic), `viewer.py` (interactive
 HTML replay of a plan, `--html`, `make view`), `draw.py` (yard snapshots and
 the LinkedIn image, `make image`), `cli.py`. `tests/exhaustive.py` is the independent optimality
-check on tiny instances. Later, like the siblings: `notebooks/` and its Makefile
-targets.
+check on tiny instances. `notebooks/benchmark.ipynb` (benchmark analysis,
+live checks, plan snapshots; `make notebook`, `make notebook-check`) is stored
+with its outputs — keep them free of local paths.
 
 Goal: find out how far a **single pure MILP** goes — no decomposition.
 

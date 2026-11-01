@@ -13,6 +13,7 @@
 #   make diagrams  export docs/diagrams/*.drawio to SVG with the draw.io desktop app
 #   make view      solve an example and open the plan viewer (out/plan.html)
 #   make image     render images/train-wagons-linkedin.png
+#   make notebook  open notebooks/benchmark.ipynb in JupyterLab
 #
 # The project uses Python 3.12 (PYTHON_VERSION). The base interpreter is found
 # with the py launcher on Windows and as python3.12 elsewhere, independently of
@@ -48,7 +49,7 @@ STAMP := .venv/.installed
 ARGS ?= --trains 4 --seed 1
 
 .DEFAULT_GOAL := help
-.PHONY: help venv test run view image benchmark report diagrams clean distclean recreate
+.PHONY: help venv test run view image notebook notebook-check benchmark report diagrams clean distclean recreate
 
 help:
 	@echo Targets:
@@ -57,6 +58,8 @@ help:
 	@echo   make run        solve an example; override the instance with ARGS="..."
 	@echo   make view       solve the example and open the plan viewer out/plan.html
 	@echo   make image      render images/train-wagons-linkedin.png
+	@echo   make notebook   open notebooks/benchmark.ipynb in JupyterLab
+	@echo   make notebook-check  run all notebook cells headless and store the outputs
 	@echo   make benchmark  solve the benchmark grid (long) and write docs/benchmark.md
 	@echo   make report     write docs/benchmark.md from docs/benchmark/*.csv
 	@echo   make diagrams   export docs/diagrams/*.drawio to SVG (draw.io desktop, DRAWIO=...)
@@ -78,7 +81,7 @@ $(VENV_CFG):
 $(STAMP): pyproject.toml Makefile $(VENV_CFG)
 	$(PYTHON) scripts/check_venv.py $(PYTHON_VERSION)
 	$(VENV_PY) -m pip install --upgrade pip
-	$(VENV_PY) -m pip install -e ".[dev,plot]"
+	$(VENV_PY) -m pip install -e ".[dev,plot,notebook]"
 	$(VENV_PY) -c "open('$(STAMP)', 'w').close()"
 
 venv: $(STAMP)
@@ -88,6 +91,12 @@ test: $(STAMP)
 
 run: $(STAMP)
 	$(VENV_PY) -m train_wagons $(ARGS)
+
+notebook: $(STAMP)
+	$(VENV_PY) -m jupyter lab notebooks/benchmark.ipynb
+
+notebook-check: $(STAMP)
+	$(VENV_PY) -m jupyter nbconvert --to notebook --execute --inplace --ExecutePreprocessor.record_timing=False notebooks/benchmark.ipynb
 
 image: $(STAMP)
 	$(VENV_PY) scripts/linkedin_image.py
