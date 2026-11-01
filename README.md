@@ -46,6 +46,7 @@ All dependencies are declared in [pyproject.toml](pyproject.toml):
 |-------------|-----------|-------------------------|
 | runtime     | `ortools` | the MILP, SCIP, CP-SAT  |
 | extra `dev` | `pytest`  | tests                   |
+| extra `plot` | `matplotlib` | the image          |
 
 ### Getting make on Windows
 
@@ -65,7 +66,7 @@ make venv
 ```
 
 creates `.venv` with **Python 3.12** and installs the project in editable
-mode with the `dev` extra. Running it again only reinstalls when
+mode with the `dev` and `plot` extras. Running it again only reinstalls when
 `pyproject.toml` or the `Makefile` has changed.
 
 The version is pinned in the Makefile (`PYTHON_VERSION := 3.12`). On Windows
@@ -82,6 +83,7 @@ If `.venv` exists with another Python version, `make venv` stops and asks for
 | `make test`          | run the tests with pytest                              |
 | `make run`           | solve an example instance; options with `ARGS="..."`   |
 | `make view`          | solve the example and open the plan viewer `out/plan.html` |
+| `make image`         | render `images/train-wagons-linkedin.png`              |
 | `make benchmark`     | solve the benchmark grid (hours) and write `docs/benchmark.md` |
 | `make report`        | write `docs/benchmark.md` from `docs/benchmark/*.csv`  |
 | `make diagrams`      | export `docs/diagrams/*.drawio` to SVG (draw.io desktop app) |
@@ -97,7 +99,7 @@ Linux/macOS.
 
 ```bash
 py -3.12 -m venv .venv
-.venv/Scripts/python -m pip install -e ".[dev]"
+.venv/Scripts/python -m pip install -e ".[dev,plot]"
 ```
 
 (On Linux/macOS use `python3.12 -m venv .venv` and `.venv/bin/python`.)
@@ -174,6 +176,21 @@ print(result.metrics, result.departures)
 possible and reports violated rules, independently of any model; `verify`
 returns only the violations.
 
+## Image
+
+![A snapshot of an optimal plan](images/train-wagons-linkedin.png)
+
+```bash
+make image
+```
+
+solves an instance of 8 trains and 72 wagons with CP-SAT (one thread, so the
+plan and the image are the same on every run, about a minute), checks the
+plan with `simulate` and draws the yard while the first train is assembled:
+the next wagons in the port, the eight FIFO lanes with their weight, and the
+departure track. The script writes `images/train-wagons-linkedin.png`
+(2400 × 1350 px).
+
 ## Benchmark
 
 ```bash
@@ -218,10 +235,12 @@ src/train_wagons/
   solution.py         LoadingPlan, the step-by-step simulate() and verify()
   baseline.py         reference plan, train by train
   viewer.py           interactive HTML viewer of a plan
+  draw.py             yard snapshots of a plan and the image
   heuristic.py        heuristic plan in waves (upper bound, R, start)
   model.py            the MILP, solved lexicographically with SCIP or CP-SAT
   cli.py              command line interface
-scripts/              benchmark.py runs the grid, check_venv.py guards the Python version
+scripts/              benchmark.py runs the grid, linkedin_image.py renders the image,
+                      watch_benchmark.sh shows the progress, check_venv.py guards the Python version
 tests/                pytest suite; exhaustive.py searches tiny instances completely
 .run/                 shared IntelliJ run configurations
 Makefile              environment and task shortcuts

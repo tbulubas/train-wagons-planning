@@ -26,9 +26,10 @@ Modules: `instance.py` (dispatch plan, generator), `solution.py` (plan,
 independent step-by-step `simulate()` / `verify()`), `baseline.py` (reference
 plan), `heuristic.py` (wave plan), `model.py` (the MILP of
 `docs/mip-model.md`, SCIP or CP-SAT, lexicographic), `viewer.py` (interactive
-HTML replay of a plan, `--html`, `make view`), `cli.py`. `tests/exhaustive.py` is the independent optimality
-check on tiny instances. Later, like the siblings: `draw.py`, `notebooks/`,
-`images/`, `scripts/linkedin_image.py` and the matching Makefile targets.
+HTML replay of a plan, `--html`, `make view`), `draw.py` (yard snapshots and
+the LinkedIn image, `make image`), `cli.py`. `tests/exhaustive.py` is the independent optimality
+check on tiny instances. Later, like the siblings: `notebooks/` and its Makefile
+targets.
 
 Goal: find out how far a **single pure MILP** goes — no decomposition.
 

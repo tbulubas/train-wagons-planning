@@ -12,6 +12,7 @@
 #   make benchmark solve the benchmark grid and write docs/benchmark.md
 #   make diagrams  export docs/diagrams/*.drawio to SVG with the draw.io desktop app
 #   make view      solve an example and open the plan viewer (out/plan.html)
+#   make image     render images/train-wagons-linkedin.png
 #
 # The project uses Python 3.12 (PYTHON_VERSION). The base interpreter is found
 # with the py launcher on Windows and as python3.12 elsewhere, independently of
@@ -47,7 +48,7 @@ STAMP := .venv/.installed
 ARGS ?= --trains 4 --seed 1
 
 .DEFAULT_GOAL := help
-.PHONY: help venv test run view benchmark report diagrams clean distclean recreate
+.PHONY: help venv test run view image benchmark report diagrams clean distclean recreate
 
 help:
 	@echo Targets:
@@ -55,6 +56,7 @@ help:
 	@echo   make test       run the tests with pytest
 	@echo   make run        solve an example; override the instance with ARGS="..."
 	@echo   make view       solve the example and open the plan viewer out/plan.html
+	@echo   make image      render images/train-wagons-linkedin.png
 	@echo   make benchmark  solve the benchmark grid (long) and write docs/benchmark.md
 	@echo   make report     write docs/benchmark.md from docs/benchmark/*.csv
 	@echo   make diagrams   export docs/diagrams/*.drawio to SVG (draw.io desktop, DRAWIO=...)
@@ -76,7 +78,7 @@ $(VENV_CFG):
 $(STAMP): pyproject.toml Makefile $(VENV_CFG)
 	$(PYTHON) scripts/check_venv.py $(PYTHON_VERSION)
 	$(VENV_PY) -m pip install --upgrade pip
-	$(VENV_PY) -m pip install -e ".[dev]"
+	$(VENV_PY) -m pip install -e ".[dev,plot]"
 	$(VENV_PY) -c "open('$(STAMP)', 'w').close()"
 
 venv: $(STAMP)
@@ -86,6 +88,9 @@ test: $(STAMP)
 
 run: $(STAMP)
 	$(VENV_PY) -m train_wagons $(ARGS)
+
+image: $(STAMP)
+	$(VENV_PY) scripts/linkedin_image.py
 
 view: $(STAMP)
 	$(VENV_PY) -m train_wagons $(ARGS) --html out/plan.html
